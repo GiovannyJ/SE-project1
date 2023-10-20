@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 from dataclasses import dataclass
+import json
 
 
 @dataclass
@@ -15,7 +16,7 @@ class Recipe:
 
 class WebScrape:
     def __init__(self):
-        self.url = "https://tasty.co/"
+        self.__url = "https://tasty.co/"
         self.curRecipe = None
 
     def __checkSite(self, url):
@@ -26,9 +27,9 @@ class WebScrape:
 
     def __buildUrl(self, path, user_input):
         if path == "search":
-            return f"{self.url}search?q={user_input}&sort=popular"
+            return f"{self.__url}search?q={user_input}&sort=popular"
         elif path == "recipe":
-            return f"{self.url}{user_input}"
+            return f"{self.__url}{user_input}"
         else:
             return None
 
@@ -109,6 +110,19 @@ class WebScrape:
         )
         
         return self.curRecipe
+
+    def package(self):
+        if self.curRecipe is not None:
+            recipe_data = {
+                "title": self.curRecipe.title,
+                "ingredients": self.curRecipe.ingredients,
+                "instructions": self.curRecipe.instructions,
+                "servings": self.curRecipe.servings,
+            }
+
+            return json.dumps(recipe_data, ensure_ascii=False, indent=4)
+        else:
+            return None
 
 
 if __name__ == '__main__':

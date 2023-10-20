@@ -1,0 +1,19 @@
+Recipe data source: https://tasty.co/
+
+import the class
+import webscrape
+
+call the class
+ws = WebScrape()
+
+Scrape for the desired ingredient
+ws.Scrape("FOOD")
+
+You can either call the properties of the recipe or package them as json
+
+ws.curRecipe
+ws.curRecipe.title
+ws.curRecipe.servings
+ws.curRecipe.ingredients
+
+ws.package()
