@@ -2,85 +2,121 @@ import requests
 from bs4 import BeautifulSoup
 from dataclasses import dataclass
 
-@dataclass
-class Ingredient:
-    name: str
-    amount: str
 
 @dataclass
 class Recipe:
     title: str  # The title of the recipe
-    ingredients: list[Ingredient]  # A list of Ingredient data class instances
+    ingredients: list  # A list of Ingredient data class instances
     instructions: list  # A list of cooking instructions
-    prep_time: int  # Preparation time in minutes
-    cook_time: int  # Cooking time in minutes
+    # prep_time: int  # Preparation time in minutes
+    # cook_time: int  # Cooking time in minutes
     servings: int  # Number of servings
-    cuisine: str  # The type of cuisine (e.g., Italian, Chinese)
 
 
 class WebScrape:
-    def __init__(self, url=""):
-        self.url = url
-        self.curRecipe = Recipe()
+    def __init__(self):
+        self.url = "https://tasty.co/"
+        self.curRecipe = None
 
-    def __checkSite(self):
-        response = requests.get(self.url)
+    def __checkSite(self, url):
+        response = requests.get(url)
         if response.status_code == 200:
             return response.text
         return None
 
-    def Scrape(self):
-        # soup = BeautifulSoup(self.__checkSite(), 'html.parser')
-        '''
-        parse text for:
-        recipe name
-        ingredients
-            name
-            amount
-        prep time
-        cooking time
-        servings
-        type of cuisine
+    def __buildUrl(self, path, user_input):
+        match path:
+            case "search":
+                return f"{self.url}search?q={user_input}&sort=popular"
+            case "recipe":
+                return f"{self.url}{user_input}"
+
+    def Scrape(self, user_input):
+        search_url = self.__buildUrl("search", user_input)
         
-        BIND TO self.curRecipe
-        '''
-        self.curRecipe(
-            title= 'test',  # The title of the recipe
-            ingredients= [
-                Ingredient(name='ing1', amount='1')
-                ],
-            instructions= ['thing'],
-            prep_time= 30,
-            cook_time= 20,
-            servings= 5,
-            cuisine= 'new yotk'
+        soup = BeautifulSoup(self.__checkSite(search_url), 'html.parser')
+       
+
+        search_results_div = soup.find('div', id='search-results-feed')
+
+        if search_results_div:
+            
+            first_a_tag = search_results_div.find('a')
+
+            if first_a_tag:
+                recipe_url = self.__buildUrl("recipe", first_a_tag.get('href'))
+
+                soup = BeautifulSoup(self.__checkSite(recipe_url), 'html.parser')
+                
+                #GETTING TITLE
+                recipe_title = soup.find('h1', class_='recipe-name extra-bold xs-mb05 md-mb1').text
+                #==============================================================================================
+                
+
+                #GETTING INGREDIENTS
+                ingredients_section = soup.find('div', class_='ingredients__section')
+                recipe_ingredients = []
+                ingredient_items = ingredients_section.find_all('li', class_='ingredient')
+
+                for item in ingredient_items:
+                    ingredient_text = ' '.join(item.stripped_strings)
+                    recipe_ingredients.append(ingredient_text)
+
+                #==============================================================================================
+                
+                
+                #GETTING INSTRUCTIONS
+                instructions_list = soup.find('ol', class_='prep-steps')
+                recipe_instructions = []
+                instruction_items = instructions_list.find_all('li')
+                for i, item in enumerate(instruction_items, start=1):
+                    instruction_text = item.get_text(strip=True)
+                    recipe_instructions.append(f"Step {i}: {instruction_text}")
+                #==============================================================================================
+                
+                                
+                #GETTING COOK TIME
+                # cooktimes = soup.find('div', class_="desktop-cooktimes xs-hide xs-pb05 md-block lg-mb2")
+                # if cooktimes:
+                #     time_elements = cooktimes.find_all("p", class_="xs-text-4 md-hide")
+                #     last_two_times = [time.text for time in time_elements[-2:]]
+                #     time_integers = [int(time.split()[0]) for time in last_two_times]
+                #     prep_time = time_integers[0]
+                #     cook_time = time_integers[1]
+                #==============================================================================================
+
+                #GETTING SERVINGS
+                servings_text = soup.find("p", class_="servings-display xs-text-2 xs-mb2").text
+                tokens = servings_text.split()
+                if len(tokens) >= 2:
+                    servings = int(tokens[1])
+
+                #==============================================================================================
+
+            else:
+                print("No 'a' tags found within the specified 'div'.")
+        else:
+            print("No 'div' with id 'search-results-feed' found.")
+        
+        self.curRecipe = Recipe(
+            title=recipe_title,
+            ingredients=recipe_ingredients,
+            instructions=recipe_instructions,
+            # prep_time=prep_time,
+            # cook_time=cook_time,
+            servings=servings,
         )
-
-    
-
+        
+        return self.curRecipe
 
 
 if __name__ == '__main__':
     ws = WebScrape()
-    ws.Scrape()
+    ws.Scrape("waffles")
     print(ws.curRecipe)
-# # Define the URL of the webpage you want to scrape
-# url = "https://example.com/articles"
-
-# # Send an HTTP GET request to the URL
-# response = requests.get(url)
-
-# # Check if the request was successful
-# if response.status_code == 200:
-#     # Parse the HTML content of the page using BeautifulSoup
-#     soup = BeautifulSoup(response.text, 'html.parser')
-
-#     # Locate the HTML elements containing the data you want to scrape
-#     # Here, we're looking for article titles within <h2> tags
-#     article_titles = soup.find_all('h2')
-
-#     # Loop through the article titles and print them
-#     for title in article_titles:
-#         print(title.text)
-# else:
-#     print("Failed to retrieve the webpage. Status code:", response.status_code)
+    print(ws.curRecipe.title)
+    # print(ws.curRecipe.cook_time)
+    # print(ws.curRecipe.prep_time)
+    print(ws.curRecipe.servings)
+    print(ws.curRecipe.ingredients)
+    print(ws.curRecipe.instructions)
