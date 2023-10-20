@@ -145,13 +145,13 @@ class WebScrape:
             return None
 
 
-if __name__ == '__main__':
-    ws = WebScrape()
-    ws.Scrape("waffles")
-    print(ws.curRecipe)
-    print(ws.curRecipe.title)
-    # print(ws.curRecipe.cook_time)
-    # print(ws.curRecipe.prep_time)
-    print(ws.curRecipe.servings)
-    print(ws.curRecipe.ingredients)
-    print(ws.curRecipe.instructions)
+# if __name__ == '__main__':
+#     ws = WebScrape()
+#     ws.Scrape("waffles")
+#     print(ws.curRecipe)
+#     print(ws.curRecipe.title)
+#     # print(ws.curRecipe.cook_time)
+#     # print(ws.curRecipe.prep_time)
+#     print(ws.curRecipe.servings)
+#     print(ws.curRecipe.ingredients)
+#     print(ws.curRecipe.instructions)
