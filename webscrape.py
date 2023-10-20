@@ -20,12 +20,23 @@ class WebScrape:
         self.curRecipe = None
 
     def __checkSite(self, url):
+        """
+        Helper method to check if the site can be scraped
+        URL: URL to scrape from
+        Return: html of the webpage
+        """
         response = requests.get(url)
         if response.status_code == 200:
             return response.text
         return None
 
     def __buildUrl(self, path, user_input):
+        """
+        Helper method to build the url depending on the path
+        path: path from the base url
+        user_input: value given by user to redirect
+        Return: URL for search or recipe
+        """
         if path == "search":
             return f"{self.__url}search?q={user_input}&sort=popular"
         elif path == "recipe":
@@ -34,6 +45,11 @@ class WebScrape:
             return None
 
     def Scrape(self, user_input):
+        """
+        Scrapes the url (https://tasty.co) for recipes based on user_input and binds it to self.curRecipe
+        user_input: the ingredient the user wants to search for
+        Returns: unbinded Recipe properties
+        """
         search_url = self.__buildUrl("search", user_input)
         
         soup = BeautifulSoup(self.__checkSite(search_url), 'html.parser')
@@ -111,7 +127,11 @@ class WebScrape:
         
         return self.curRecipe
 
-    def package(self):
+    def Package(self):
+        """
+        Binds self.curRecipe to json format
+        Returns: self.curRecipe as JSON jump
+        """
         if self.curRecipe is not None:
             recipe_data = {
                 "title": self.curRecipe.title,
