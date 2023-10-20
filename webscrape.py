@@ -25,11 +25,12 @@ class WebScrape:
         return None
 
     def __buildUrl(self, path, user_input):
-        match path:
-            case "search":
-                return f"{self.url}search?q={user_input}&sort=popular"
-            case "recipe":
-                return f"{self.url}{user_input}"
+        if path == "search":
+            return f"{self.url}search?q={user_input}&sort=popular"
+        elif path == "recipe":
+            return f"{self.url}{user_input}"
+        else:
+            return None
 
     def Scrape(self, user_input):
         search_url = self.__buildUrl("search", user_input)
