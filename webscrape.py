@@ -113,8 +113,10 @@ class WebScrape:
 
             else:
                 print("No 'a' tags found within the specified 'div'.")
+                return None
         else:
             print("No 'div' with id 'search-results-feed' found.")
+            return None
         
         self.curRecipe = Recipe(
             title=recipe_title,
@@ -145,13 +147,14 @@ class WebScrape:
             return None
 
 
-# if __name__ == '__main__':
-#     ws = WebScrape()
-#     ws.Scrape("waffles")
-#     print(ws.curRecipe)
-#     print(ws.curRecipe.title)
-#     # print(ws.curRecipe.cook_time)
-#     # print(ws.curRecipe.prep_time)
-#     print(ws.curRecipe.servings)
-#     print(ws.curRecipe.ingredients)
-#     print(ws.curRecipe.instructions)
+if __name__ == '__main__':
+    ws = WebScrape()
+    ws.Scrape("umbrella")
+    print(ws.curRecipe)
+    print(ws.curRecipe.title)
+    # print(ws.curRecipe.cook_time)
+    # print(ws.curRecipe.prep_time)
+    print(ws.curRecipe.servings)
+    print(ws.curRecipe.ingredients)
+    print(ws.curRecipe.instructions)
+    print(ws.Package())
