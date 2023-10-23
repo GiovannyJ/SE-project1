@@ -38,14 +38,14 @@ class LaunchRequestHandler(AbstractRequestHandler):
 
 class GetRecipeIntentHandler(AbstractRequestHandler):
     """Handler for Get Recipe Intent"""
-    def can_handle(self, handler_input):
+    def can_handle(handler_input):
         # type: (HandlerInput) -> bool
         return ask_utils.is_intent_name("GetRecipeIntent")(handler_input)
 
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
         scrape = WebScrape()
-        speak_output = scrape.Scrape(self, handler_input) #placeholder for scraping
+        speak_output = scrape.Scrape(handler_input) #placeholder for scraping
 
         return (
             handler_input.response_builder
