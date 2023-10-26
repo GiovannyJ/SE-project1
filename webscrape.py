@@ -1,18 +1,25 @@
 import requests
 from bs4 import BeautifulSoup
-from dataclasses import dataclass
+# from dataclasses import dataclass
 import json
 
 
-@dataclass
-class Recipe:
-    title: str  # The title of the recipe
-    ingredients: list  # A list of Ingredient data class instances
-    instructions: list  # A list of cooking instructions
-    # prep_time: int  # Preparation time in minutes
-    # cook_time: int  # Cooking time in minutes
-    servings: int  # Number of servings
+# @dataclass
+# class Recipe:
+#     title: str  # The title of the recipe
+#     ingredients: list  # A list of Ingredient data class instances
+#     instructions: list  # A list of cooking instructions
+#     # prep_time: int  # Preparation time in minutes
+#     # cook_time: int  # Cooking time in minutes
+#     servings: int  # Number of servings
 
+
+class Recipe:
+    def __init__(self, title, ingredients, instructions, servings):
+        self.title = title
+        self.ingredients = ingredients
+        self.instructions = instructions
+        self.servings = servings
 
 class WebScrape:
     def __init__(self):
@@ -149,7 +156,7 @@ class WebScrape:
 
 if __name__ == '__main__':
     ws = WebScrape()
-    ws.Scrape("umbrella")
+    ws.Scrape("steak")
     print(ws.curRecipe)
     print(ws.curRecipe.title)
     # print(ws.curRecipe.cook_time)
