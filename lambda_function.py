@@ -13,6 +13,7 @@ from ask_sdk_core.dispatch_components import AbstractExceptionHandler
 from ask_sdk_core.handler_input import HandlerInput
 
 from ask_sdk_model import Response
+from webscrape import WebScrape
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -38,19 +39,18 @@ class LaunchRequestHandler(AbstractRequestHandler):
 
 class GetRecipeIntentHandler(AbstractRequestHandler):
     """Handler for Get Recipe Intent"""
-    def can_handle(handler_input):
-        # type: (HandlerInput) -> bool
+    def can_handle(self, handler_input):
         return ask_utils.is_intent_name("GetRecipeIntent")(handler_input)
 
     def handle(self, handler_input):
-        # type: (HandlerInput) -> Response
-        scrape = WebScrape()
-        speak_output = scrape.Scrape(handler_input) #placeholder for scraping
+        ws = WebScrape()
+        food = handler_input.request_envelope.request.intent.slots["food"].value
+        ws.Scrape(food)
+        speak_output = f"I found a Recipe: {ws.curRecipe.title} it serves {ws.curRecipe.servings} people, here are the ingredients {ws.curRecipe.ingredients}, the steps to create this dish are as follows: {ws.curRecipe.instructions}"
 
         return (
             handler_input.response_builder
                 .speak(speak_output)
-                .ask(speak_output)
                 .response
         )
 
@@ -172,6 +172,9 @@ class CatchAllExceptionHandler(AbstractExceptionHandler):
         logger.error(exception, exc_info=True)
 
         speak_output = "Sorry, I had trouble doing what you asked. Please try again."
+        #food = handler_input.request_envelope.request.intent.slots["food"].value
+        #speak_output = food
+        
 
         return (
             handler_input.response_builder

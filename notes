@@ -1,0 +1,13 @@
+launch:
+open recipe assistant
+
+use skill:
+find recipes using {FOOD}
+show me recipes using {FOOD}
+
+need to implement:
+- organize the results better
+    -would you like to hear the ingridents
+    -would you like to hear the instrctions
+- allow for multiple uses (ends after one instruction)
+- slow down speech of result

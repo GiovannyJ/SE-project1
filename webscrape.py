@@ -1,17 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
-# from dataclasses import dataclass
 import json
-
-
-# @dataclass
-# class Recipe:
-#     title: str  # The title of the recipe
-#     ingredients: list  # A list of Ingredient data class instances
-#     instructions: list  # A list of cooking instructions
-#     # prep_time: int  # Preparation time in minutes
-#     # cook_time: int  # Cooking time in minutes
-#     servings: int  # Number of servings
 
 
 class Recipe:
@@ -60,8 +49,7 @@ class WebScrape:
         search_url = self.__buildUrl("search", user_input)
         
         soup = BeautifulSoup(self.__checkSite(search_url), 'html.parser')
-       
-
+        
         search_results_div = soup.find('div', id='search-results-feed')
 
         if search_results_div:
@@ -97,6 +85,8 @@ class WebScrape:
                 for i, item in enumerate(instruction_items, start=1):
                     instruction_text = item.get_text(strip=True)
                     recipe_instructions.append(f"Step {i}: {instruction_text}")
+                
+                recipe_instructions.pop()
                 #==============================================================================================
                 
                                 
@@ -152,16 +142,3 @@ class WebScrape:
             return json.dumps(recipe_data, ensure_ascii=False, indent=4)
         else:
             return None
-
-
-if __name__ == '__main__':
-    ws = WebScrape()
-    ws.Scrape("steak")
-    print(ws.curRecipe)
-    print(ws.curRecipe.title)
-    # print(ws.curRecipe.cook_time)
-    # print(ws.curRecipe.prep_time)
-    print(ws.curRecipe.servings)
-    print(ws.curRecipe.ingredients)
-    print(ws.curRecipe.instructions)
-    print(ws.Package())
