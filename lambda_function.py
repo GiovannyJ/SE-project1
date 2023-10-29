@@ -46,7 +46,34 @@ class GetRecipeIntentHandler(AbstractRequestHandler):
         ws = WebScrape()
         food = handler_input.request_envelope.request.intent.slots["food"].value
         ws.Scrape(food)
-        speak_output = f"I found a Recipe: {ws.curRecipe.title} it serves {ws.curRecipe.servings} people, here are the ingredients {ws.curRecipe.ingredients}, the steps to create this dish are as follows: {ws.curRecipe.instructions}"
+        
+        components = handler_input.request_envelope.request.intent.slots["recipeComponents"].value
+        
+        instructions_list = ["instructions", "instruction", "Instruction", "Instrctions", "steps", "Steps"]
+        serving_size_list = ["serving size", "Servings", "servings", "Serving Size"]
+        ingredients_list = ["ingredients", "Ingredients", "ingredient", "Ingredient"]
+        everything_list = ["everything", "All", "all", "Everything"]
+
+        if components:
+            if components in everything_list:
+                speak_output = f"I found a Recipe: {ws.curRecipe.title}. It serves {ws.curRecipe.servings} people. Here are the ingredients: {ws.curRecipe.ingredients}. The steps to create this dish are as follows: {ws.curRecipe.instructions}"
+            
+            elif components in instructions_list:
+                if ws.curRecipe.instructions:
+                    speak_output = f"Instructions: {ws.curRecipe.instructions}"
+                else:
+                    speak_output = "I'm sorry, I couldn't find instructions for this recipe."
+            
+            elif components in serving_size_list:
+                speak_output = f"Serving size: {ws.curRecipe.servings} people"
+            
+            elif components in ingredients_list:
+                speak_output = f"Ingredients for {ws.curRecipe.title}: {ws.curRecipe.ingredients}"
+            
+            else:
+                speak_output = "I am not sure what you mean!"
+        else:
+            speak_output = f"I found a Recipe: {ws.curRecipe.title}. It serves {ws.curRecipe.servings} people. Here are the ingredients: {ws.curRecipe.ingredients}. The steps to create this dish are as follows: {ws.curRecipe.instructions}"
 
         return (
             handler_input.response_builder

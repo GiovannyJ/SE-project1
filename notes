@@ -2,12 +2,22 @@ launch:
 open recipe assistant
 
 use skill:
-find recipes using {FOOD}
-show me recipes using {FOOD}
 
-need to implement:
-- organize the results better
-    -would you like to hear the ingridents
-    -would you like to hear the instrctions
-- allow for multiple uses (ends after one instruction)
-- slow down speech of result
+specific utterances: -> returns only recipeComponent
+    find {recipeComponent} for a recipe using {FOOD}
+    show me {recipeComponent} for a recipe using {FOOD}
+    give me {recipeComponent} for a recipe using {FOOD}
+    
+    recipeComponent = instructions, serving size, ingredients, everything
+    
+    instructions_list = [instructions, instruction, Instruction, Instructions, steps, Steps]
+    serving_size_list = [serving size, Servings, servings, Serving Size]
+    ingredients_list = [ingredients, Ingredients, ingredient, Ingredient]
+    everything_list = [everything, All, all, Everything]
+    
+general utterances: -> returns all components
+    find a recipe using {FOOD}
+    show me a recipe using {FOOD}
+    give me a recipe using {FOOD}
+
+FOOD = any food

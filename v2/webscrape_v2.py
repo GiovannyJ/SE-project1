@@ -1,5 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
+import json
+
 
 class Recipe:
     def __init__(self, title, ingredients, instructions, servings):
@@ -38,11 +40,11 @@ class WebScrape:
         else:
             return None
 
-    def Scrape(self, user_input):
+    def Scrape(self, user_input, recipe_num=1):
         """
         Scrapes the url (https://tasty.co) for recipes based on user_input and binds it to self.curRecipe
         user_input: the ingredient the user wants to search for
-        Returns: Recipe properties
+        Returns: unbinded Recipe properties
         """
         search_url = self.__buildUrl("search", user_input)
         
@@ -52,17 +54,19 @@ class WebScrape:
 
         if search_results_div:
             
-            first_a_tag = search_results_div.find('a')
+            a_tags = search_results_div.find_all('a')
+            # first_a_tag = search_results_div.find('a')
 
-            if first_a_tag:
-                recipe_url = self.__buildUrl("recipe", first_a_tag.get('href'))
+            if a_tags:
+                recipe_url = self.__buildUrl("recipe", a_tags[recipe_num-1].get('href'))
 
                 soup = BeautifulSoup(self.__checkSite(recipe_url), 'html.parser')
                 
                 #GETTING TITLE
                 recipe_title = soup.find('h1', class_='recipe-name extra-bold xs-mb05 md-mb1').text
                 #==============================================================================================
-        
+                
+
                 #GETTING INGREDIENTS
                 ingredients_section = soup.find('div', class_='ingredients__section')
                 recipe_ingredients = []
@@ -74,6 +78,7 @@ class WebScrape:
 
                 #==============================================================================================
                 
+                
                 #GETTING INSTRUCTIONS
                 instructions_list = soup.find('ol', class_='prep-steps')
                 recipe_instructions = []
@@ -83,6 +88,17 @@ class WebScrape:
                     recipe_instructions.append(f"Step {i}: {instruction_text}")
                 
                 recipe_instructions.pop()
+                #==============================================================================================
+                
+                                
+                #GETTING COOK TIME
+                # cooktimes = soup.find('div', class_="desktop-cooktimes xs-hide xs-pb05 md-block lg-mb2")
+                # if cooktimes:
+                #     time_elements = cooktimes.find_all("p", class_="xs-text-4 md-hide")
+                #     last_two_times = [time.text for time in time_elements[-2:]]
+                #     time_integers = [int(time.split()[0]) for time in last_two_times]
+                #     prep_time = time_integers[0]
+                #     cook_time = time_integers[1]
                 #==============================================================================================
 
                 #GETTING SERVINGS
@@ -104,7 +120,31 @@ class WebScrape:
             title=recipe_title,
             ingredients=recipe_ingredients,
             instructions=recipe_instructions,
+            # prep_time=prep_time,
+            # cook_time=cook_time,
             servings=servings,
         )
         
         return self.curRecipe
+
+    def Package(self):
+        """
+        Binds self.curRecipe to json format
+        Returns: self.curRecipe as JSON jump
+        """
+        if self.curRecipe is not None:
+            recipe_data = {
+                "title": self.curRecipe.title,
+                "ingredients": self.curRecipe.ingredients,
+                "instructions": self.curRecipe.instructions,
+                "servings": self.curRecipe.servings,
+            }
+
+            return json.dumps(recipe_data, ensure_ascii=False, indent=4)
+        else:
+            return None
+
+if __name__ == '__main__':
+    ws = WebScrape()
+    ws.Scrape("chicken",7)
+    print(ws.curRecipe.title)
